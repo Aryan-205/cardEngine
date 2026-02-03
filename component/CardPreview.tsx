@@ -8,7 +8,7 @@ export const CardPreview = () => {
   return (
     <div 
       id="card-export-area" 
-      className="relative aspect-[3/4] w-full max-w-md overflow-hidden rounded-sm shadow-xl bg-white transition-all"
+      className="relative aspect-3/4 w-full max-w-xl overflow-hidden rounded-sm shadow-xl bg-white transition-all"
       style={{ 
         // Check if background is a URL/DataURL or a hex color
         background: background?.startsWith('#') ? background : 'white' 
