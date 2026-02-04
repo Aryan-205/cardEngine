@@ -17,7 +17,7 @@ export const EnvelopePreview = ({
   const [isOpen, setIsOpen] = useState(initialIsOpen);
 
   return (
-    <div className="relative w-full max-w-2xl aspect-[5/4] flex items-center justify-center perspective-1000">
+    <div className="relative w-full max-w-2xl aspect-5/4 flex items-center justify-center perspective-1000">
       <div className="relative w-[90%] h-[80%] shadow-2xl">
         
         {/* 1. BACK PANEL & MAIN BODY */}
