@@ -8,7 +8,8 @@ export type BackgroundConfig = {
 
 export type EnvelopeConfig = {
   color: string;
-  texture?: string;
+  outerColor: string;
+  innerTexture: string;
 };
 
 export type TextShadowConfig = {
@@ -100,7 +101,7 @@ export const useStore = create<Store>((set) => ({
   background: { type: 'color', value: '#F8F6EF' },
   setBackground: (b) => set({ background: b }),
 
-  envelope: { color: '#F8F6EF' },
+  envelope: { color: '#F8F6EF', outerColor: '#F8F6EF', innerTexture: '/textures/paper.jpg' },
   setEnvelope: (e) => set({ envelope: e }),
 
   textOverlays: [],

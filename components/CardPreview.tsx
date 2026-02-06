@@ -18,7 +18,7 @@ export default function CardPreview({ texture }: { texture: string }) {
   return (
     <motion.div
       ref={containerRef}
-      className="relative z-50 w-[60vh] min-h-[80vh] rounded-xl overflow-hidden shadow-lg bg-white"
+      className="relative z-40 w-[60vh] min-h-[80vh] rounded-xl overflow-hidden shadow-lg bg-white"
       style={{
         backgroundImage: `url(${texture})`,
         backgroundSize: 'cover',
@@ -30,6 +30,7 @@ export default function CardPreview({ texture }: { texture: string }) {
         .filter((o) => o.isVisible)
         .map((img) => (
           <motion.div
+            drag
             dragConstraints={containerRef}
             dragElastic={0.1}
             dragMomentum={false}
@@ -37,9 +38,9 @@ export default function CardPreview({ texture }: { texture: string }) {
               bounceStiffness: 100,
               bounceDamping: 10,
             }}
-            dragListener={false}
+            // dragListener={false}
             key={img.id}
-            className="absolute overflow-hidden"
+            className="absolute overflow-hidden cursor-grab"
             style={{
               left: `${img.x}%`,
               top: `${img.y}%`,
@@ -57,6 +58,7 @@ export default function CardPreview({ texture }: { texture: string }) {
         .filter((o) => o.isVisible)
         .map((o) => (
           <motion.div
+            drag
             dragConstraints={containerRef}
             dragElastic={0.1}
             dragMomentum={false}
@@ -64,9 +66,9 @@ export default function CardPreview({ texture }: { texture: string }) {
               bounceStiffness: 100,
               bounceDamping: 10,
             }}
-            dragListener={false}
+            // dragListener={false}
             key={o.id}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 whitespace-pre-wrap text-center"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 whitespace-pre-wrap text-center cursor-grab"
             style={{
               left: `${o.position.x}%`,
               top: `${o.position.y}%`,

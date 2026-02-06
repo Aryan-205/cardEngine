@@ -190,7 +190,7 @@ export const TextOverlayControls = () => {
                 className={`flex items-center gap-2 p-2 rounded-xl border cursor-pointer transition-colors ${
                   selectedOverlayId === overlay.id
                     ? "bg-accent border-primary"
-                    : "bg-background hover:bg-accent border-border"
+                    : "bg-white hover:bg-accent border-border"
                 }`}
                 onClick={() => setSelectedOverlayId(overlay.id)}
               >
@@ -209,7 +209,7 @@ export const TextOverlayControls = () => {
                     <EyeOff className="h-3 w-3 text-black" />
                   )}
                 </Button>
-                <span className="flex-1 text-xs truncate">{overlay.text}</span>
+                <span className="flex-1 text-sm truncate">{overlay.text}</span>
                 <Button
                   variant="ghost"
                   size="sm"
@@ -220,9 +220,9 @@ export const TextOverlayControls = () => {
                       setSelectedOverlayId(null);
                     }
                   }}
-                  className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                  className="h-6 w-6 p-0  hover:text-destructive"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3 w-3 text-black" />
                 </Button>
               </div>
             ))}

@@ -63,8 +63,8 @@ export default function WeddingEditor() {
       <main className="flex-1 relative flex items-center justify-center p-12">
         {/* Wrap them in a shared container to control the stack */}
         <div className="relative w-full h-full flex items-center justify-center">
-          <EnvelopePreview />
-          <CardPreview />
+          {/* <EnvelopePreview /> */}
+          <CardPreview texture={background.value} />
         </div>
       </main>
 
