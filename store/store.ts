@@ -63,7 +63,7 @@ export type DesignPayload = {
 };
 
 // --- Sidebar tab ---
-export type SidebarTab = 'TEXT' | 'BACKGROUND' | 'ENVELOPE' | 'IMAGES' | 'LAYERS' | 'LAYOUT';
+export type SidebarTab = 'TEXT' | 'BACKGROUND' | 'ENVELOPE' | 'IMAGES' | 'LAYERS' | 'LAYOUT' | 'ELEMENTS' | 'FONTS';
 
 // Helper for distributive omit to preserve union types
 type DistributiveOmit<T, K extends keyof any> = T extends any

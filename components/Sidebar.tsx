@@ -1,13 +1,15 @@
 'use client';
 
 import React from 'react';
-import { Type, Image as ImageIcon, Mail, Layers, MousePointer2, Settings } from 'lucide-react';
+import { Type, Image as ImageIcon, Mail, Layers, MousePointer2, Settings, Smile, CaseSensitive } from 'lucide-react';
 import { useStore } from '@/store/store';
 import type { SidebarTab } from '@/store/store';
 
 const TABS: { id: SidebarTab; icon: React.ReactNode; label: string }[] = [
   { id: 'TEXT', icon: <Type size={24} />, label: 'Text' },
+  { id: 'FONTS', icon: <CaseSensitive size={24} />, label: 'Fonts' },
   { id: 'IMAGES', icon: <ImageIcon size={24} />, label: 'Images' },
+  { id: 'ELEMENTS', icon: <Smile size={24} />, label: 'Elements' },
   { id: 'BACKGROUND', icon: <MousePointer2 size={24} />, label: 'Background' },
   { id: 'ENVELOPE', icon: <Mail size={24} />, label: 'Envelope' },
   { id: 'LAYERS', icon: <Layers size={24} />, label: 'Layers' },
@@ -19,20 +21,20 @@ export default function Sidebar() {
 
   return (
     <div className="w-[88px] h-full border-r border-gray-100 bg-white flex flex-col items-center py-6 gap-2 z-50 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
-      <div className="mb-6">
-        <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
-          <span className="text-white font-black italic text-xl">C</span>
-        </div>
+      <div className="mb-2">
+        {/* Logo removed as requested */}
       </div>
-      {TABS.map((tab) => (
-        <SidebarItem
-          key={tab.id}
-          icon={tab.icon}
-          label={tab.label}
-          active={activeTab === tab.id}
-          onClick={() => setActiveTab(tab.id)}
-        />
-      ))}
+      <div className="flex-1 w-full flex flex-col items-center gap-2 overflow-y-auto no-scrollbar scroll-smooth">
+        {TABS.map((tab) => (
+          <SidebarItem
+            key={tab.id}
+            icon={tab.icon}
+            label={tab.label}
+            active={activeTab === tab.id}
+            onClick={() => setActiveTab(tab.id)}
+          />
+        ))}
+      </div>
     </div>
   );
 }

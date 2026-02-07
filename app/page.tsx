@@ -5,13 +5,16 @@ import { Save, Eye, Download } from 'lucide-react';
 import Sidebar from '@/components/Sidebar';
 import DesignBoard from '@/components/DesignBoard';
 import DesignProperties from '@/components/DesignProperties';
+import CardPreview from '@/components/CardPreview';
 import { useStore, getDesignPayload } from '@/store/store';
+import { AnimatePresence } from 'motion/react';
 
 export default function WeddingEditor() {
   const { activeTab, loadDesign } = useStore();
   const [sending, setSending] = useState(false);
   const [loading, setLoading] = useState(true);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   // Initial load
   useEffect(() => {
@@ -69,7 +72,7 @@ export default function WeddingEditor() {
         {/* Top Header */}
         <header className="h-[72px] bg-white border-b border-gray-100 px-8 flex items-center justify-between z-30 shadow-[0_2px_24px_rgba(0,0,0,0.02)]">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-black italic tracking-tighter text-gray-900 border-r border-gray-100 pr-6 mr-2">Antigravity<span className="text-blue-600">Canvas</span></h1>
+            <h1 className="text-xl font-black italic tracking-tighter text-gray-900 border-r border-gray-100 pr-6 mr-2">Card<span className="text-blue-600">Designer</span></h1>
             <div className="flex flex-col">
               <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 leading-none mb-1">Project Name</span>
               <input
@@ -88,6 +91,7 @@ export default function WeddingEditor() {
 
             <button
               type="button"
+              onClick={() => setShowPreview(true)}
               className="flex items-center justify-center gap-2 bg-white border border-gray-200 px-5 py-2.5 rounded-2xl font-bold hover:bg-gray-50 transition-all text-gray-700 text-xs premium-button shadow-sm"
             >
               <Eye size={16} className="text-blue-500" /> Preview
@@ -120,6 +124,10 @@ export default function WeddingEditor() {
           </aside>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showPreview && <CardPreview onClose={() => setShowPreview(false)} />}
+      </AnimatePresence>
     </div>
   );
 }

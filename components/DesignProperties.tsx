@@ -18,8 +18,13 @@ import {
     PlusCircle,
     Palette,
     Layout as LayoutIcon,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Smile,
+    CaseSensitive
 } from 'lucide-react';
+import ElementsTab from './tabs/ElementsTab';
+import FontsTab from './tabs/FontsTab';
+import LayersTab from './tabs/LayersTab';
 
 export default function DesignProperties() {
     const {
@@ -210,6 +215,7 @@ export default function DesignProperties() {
                 <div className="p-6 border-t border-gray-100 bg-gray-50/50">
                     <button
                         onClick={() => {
+                            if (!selectedElement) return;
                             if (confirm('Are you sure you want to delete this element?')) {
                                 removeElement(selectedElement.id);
                             }
@@ -228,52 +234,84 @@ export default function DesignProperties() {
         if (activeTab === 'TEXT') {
             return (
                 <div className="p-6 animate-in fade-in slide-in-from-right-4 duration-300">
-                    {renderHeader('Add Text', PlusCircle)}
+                    {renderHeader('Text Elements', PlusCircle)}
                     <div className="space-y-4">
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Click a style to add text</p>
+
                         <button
                             onClick={() => addElement({
                                 type: 'text',
-                                text: 'Add a Heading',
-                                x: 100, y: 100, width: 400, height: 60, rotation: 0, opacity: 1, isVisible: true,
-                                fontSize: 48, fontWeight: 'bold', fontFamily: fontFamilies[1].family, color: '#111827',
+                                text: 'ADD A HEADING',
+                                x: 100, y: 100, width: 400, height: 80, rotation: 0, opacity: 1, isVisible: true,
+                                fontSize: 64, fontWeight: '900', fontFamily: fontFamilies[2].family, color: '#000000',
                                 orientation: 'horizontal', textAlign: 'center',
                                 textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
                             })}
-                            className="w-full group p-6 border-2 border-dashed border-gray-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 transition-all text-left"
+                            className="w-full group p-4 border-2 border-gray-50 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 transition-all text-left"
                         >
-                            <span className="block text-2xl font-black text-gray-900 mb-1 group-hover:text-blue-600 transition-colors">Heading</span>
-                            <span className="text-xs font-medium text-gray-400">Click to add a bold title</span>
+                            <span className="block text-2xl font-black text-gray-900 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Add a heading</span>
                         </button>
 
                         <button
                             onClick={() => addElement({
                                 type: 'text',
-                                text: 'Your story begins here...',
-                                x: 100, y: 200, width: 350, height: 80, rotation: 0, opacity: 1, isVisible: true,
-                                fontSize: 18, fontWeight: 'normal', fontFamily: fontFamilies[2].family, color: '#4B5563',
+                                text: 'Add a subheading',
+                                x: 100, y: 200, width: 350, height: 60, rotation: 0, opacity: 1, isVisible: true,
+                                fontSize: 32, fontWeight: '600', fontFamily: fontFamilies[2].family, color: '#374151',
+                                orientation: 'horizontal', textAlign: 'center',
+                                textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
+                            })}
+                            className="w-full group p-4 border-2 border-gray-50 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 transition-all text-left"
+                        >
+                            <span className="block text-lg font-bold text-gray-700 group-hover:text-blue-600 transition-colors">Add a subheading</span>
+                        </button>
+
+                        <button
+                            onClick={() => addElement({
+                                type: 'text',
+                                text: 'Add a little bit of body text',
+                                x: 100, y: 300, width: 300, height: 100, rotation: 0, opacity: 1, isVisible: true,
+                                fontSize: 16, fontWeight: 'normal', fontFamily: fontFamilies[5].family, color: '#4B5563',
                                 orientation: 'horizontal', textAlign: 'left',
                                 textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
                             })}
-                            className="w-full group p-6 border-2 border-dashed border-gray-100 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 transition-all text-left"
+                            className="w-full group p-4 border-2 border-gray-50 rounded-2xl hover:border-blue-200 hover:bg-blue-50/30 transition-all text-left"
                         >
-                            <span className="block text-base font-medium text-gray-600 mb-1 group-hover:text-blue-600 transition-colors">Body Text</span>
-                            <span className="text-xs font-medium text-gray-400">Add detailed information</span>
+                            <span className="block text-sm font-medium text-gray-500 group-hover:text-blue-600 transition-colors">Add body text</span>
                         </button>
 
-                        <button
-                            onClick={() => addElement({
-                                type: 'text',
-                                text: 'With Love',
-                                x: 150, y: 350, width: 300, height: 100, rotation: 0, opacity: 1, isVisible: true,
-                                fontSize: 64, fontWeight: 'normal', fontFamily: fontFamilies[3].family, color: '#BE185D',
-                                orientation: 'horizontal', textAlign: 'center',
-                                textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
-                            })}
-                            className="w-full group p-6 border-2 border-dashed border-gray-100 rounded-2xl hover:border-red-200 hover:bg-red-50/30 transition-all text-left"
-                        >
-                            <span className="block text-3xl italic text-red-700 mb-1 group-hover:text-red-800 transition-colors" style={{ fontFamily: fontFamilies[3].family }}>Sign-off</span>
-                            <span className="text-xs font-medium text-gray-400 italic">Add a handwritten touch</span>
-                        </button>
+                        <div className="pt-6">
+                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Decorative Presets</p>
+                            <div className="grid grid-cols-1 gap-4">
+                                <button
+                                    onClick={() => addElement({
+                                        type: 'text',
+                                        text: 'Elegant Invitation',
+                                        x: 100, y: 400, width: 400, height: 120, rotation: 0, opacity: 1, isVisible: true,
+                                        fontSize: 72, fontWeight: 'normal', fontFamily: fontFamilies[3].family, color: '#831843',
+                                        orientation: 'horizontal', textAlign: 'center',
+                                        textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
+                                    })}
+                                    className="w-full group p-6 border-2 border-pink-50 bg-pink-50/10 rounded-3xl hover:border-pink-200 hover:bg-pink-50/30 transition-all text-center"
+                                >
+                                    <span className="block text-3xl italic text-pink-900 group-hover:text-pink-600 transition-colors" style={{ fontFamily: fontFamilies[3].family }}>Calligraphy Style</span>
+                                </button>
+
+                                <button
+                                    onClick={() => addElement({
+                                        type: 'text',
+                                        text: 'M0DERN VIB3S',
+                                        x: 100, y: 500, width: 400, height: 100, rotation: 0, opacity: 1, isVisible: true,
+                                        fontSize: 48, fontWeight: '900', fontFamily: 'monospace', color: '#111827',
+                                        orientation: 'horizontal', textAlign: 'center',
+                                        textShadow: { enabled: false, color: '#000000', blur: 0, offsetX: 0, offsetY: 0 }
+                                    })}
+                                    className="w-full group p-6 border-2 border-gray-900 bg-gray-900 rounded-3xl hover:bg-black transition-all text-center"
+                                >
+                                    <span className="block text-2xl font-black text-white transition-colors tracking-tighter uppercase italic">Cyber Modern</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
@@ -399,6 +437,18 @@ export default function DesignProperties() {
                     </div>
                 </div>
             )
+        }
+
+        if (activeTab === 'ELEMENTS') {
+            return <ElementsTab />;
+        }
+
+        if (activeTab === 'LAYERS') {
+            return <LayersTab />;
+        }
+
+        if (activeTab === 'FONTS') {
+            return <FontsTab />;
         }
 
         if (activeTab === 'IMAGES') {
