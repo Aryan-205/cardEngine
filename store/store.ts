@@ -20,42 +20,55 @@ export type TextShadowConfig = {
   offsetY: number;
 };
 
-export type TextOverlay = {
-  id: string;
-  text: string;
-  position: { x: number; y: number };
-  fontSize: number;
-  fontWeight: string;
-  fontFamily: string;
-  color: string;
-  opacity: number;
-  isVisible: boolean;
-  orientation: 'horizontal' | 'vertical';
-  textShadow: TextShadowConfig;
-};
+export type CanvasElementId = string;
 
-export type ImageOverlay = {
-  id: string;
-  src: string;
+export type BaseElement = {
+  id: CanvasElementId;
+  type: 'text' | 'image';
   x: number;
   y: number;
   width: number;
   height: number;
+  rotation: number;
   opacity: number;
+  zIndex: number;
   isVisible: boolean;
 };
+
+export type TextElement = BaseElement & {
+  type: 'text';
+  text: string;
+  fontSize: number;
+  fontWeight: string;
+  fontFamily: string;
+  color: string;
+  orientation: 'horizontal' | 'vertical';
+  textAlign: 'left' | 'center' | 'right';
+  textShadow: TextShadowConfig;
+};
+
+export type ImageElement = BaseElement & {
+  type: 'image';
+  src: string;
+  // potentially add filters, objectFit, etc.
+};
+
+export type CanvasElement = TextElement | ImageElement;
 
 export type DesignPayload = {
   background: BackgroundConfig;
   envelope: EnvelopeConfig;
-  card: {
-    textOverlays: TextOverlay[];
-    imageOverlays: ImageOverlay[];
-  };
+  canvasConfig: CanvasConfig;
+  elements: CanvasElement[];
 };
 
 // --- Sidebar tab ---
-export type SidebarTab = 'TEXT' | 'BACKGROUND' | 'ENVELOPE';
+export type SidebarTab = 'TEXT' | 'BACKGROUND' | 'ENVELOPE' | 'IMAGES' | 'LAYERS' | 'LAYOUT';
+
+// Helper for distributive omit to preserve union types
+type DistributiveOmit<T, K extends keyof any> = T extends any
+  ? Omit<T, K>
+  : never;
 
 type Store = {
   // Sidebar
@@ -73,26 +86,43 @@ type Store = {
   envelope: EnvelopeConfig;
   setEnvelope: (e: EnvelopeConfig) => void;
 
-  // Text overlays (compatible with useImageStore)
-  textOverlays: TextOverlay[];
-  addTextOverlay: (overlay: Omit<TextOverlay, 'id'>) => void;
-  updateTextOverlay: (id: string, updates: Partial<TextOverlay>) => void;
-  removeTextOverlay: (id: string) => void;
-  clearTextOverlays: () => void;
+  // Canvas Layout
+  canvasConfig: CanvasConfig;
+  setCanvasConfig: (config: Partial<CanvasConfig>) => void;
 
-  // Image overlays
-  imageOverlays: ImageOverlay[];
-  addImageOverlay: (overlay: Omit<ImageOverlay, 'id'>) => void;
-  updateImageOverlay: (id: string, updates: Partial<ImageOverlay>) => void;
-  removeImageOverlay: (id: string) => void;
-  clearImageOverlays: () => void;
+  // Generic Elements
+  elements: CanvasElement[];
+  selectedIds: string[];
+
+  // Actions
+  addElement: (el: DistributiveOmit<CanvasElement, 'id' | 'zIndex'>) => void;
+  updateElement: (id: string, updates: Partial<CanvasElement>) => void;
+  removeElement: (id: string) => void;
+
+  // Start Layering
+  bringToFront: (id: string) => void;
+  sendToBack: (id: string) => void;
+  setSelection: (ids: string[]) => void;
+  clearSelection: () => void;
+
+  // Data
+  loadDesign: (data: DesignPayload) => void;
+
+  // Legacy support (to avoid breaking current UI during transition)
+  textOverlays: TextElement[]; // Computed via getter if possible, or just sync
+  imageOverlays: ImageElement[];
+};
+
+export type CanvasConfig = {
+  width: number;
+  height: number;
 };
 
 function generateId() {
-  return `id_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+  return `el_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export const useStore = create<Store>((set) => ({
+export const useStore = create<Store>((set, get) => ({
   activeTab: 'TEXT',
   setActiveTab: (tab) => set({ activeTab: tab }),
   showEnvelope: false,
@@ -104,41 +134,58 @@ export const useStore = create<Store>((set) => ({
   envelope: { color: '#F8F6EF', outerColor: '#F8F6EF', innerTexture: '/textures/paper.jpg' },
   setEnvelope: (e) => set({ envelope: e }),
 
-  textOverlays: [],
-  addTextOverlay: (overlay) =>
-    set((s) => ({
-      textOverlays: [
-        ...s.textOverlays,
-        { ...overlay, id: generateId() } as TextOverlay,
-      ],
-    })),
-  updateTextOverlay: (id, updates) =>
-    set((s) => ({
-      textOverlays: s.textOverlays.map((o) =>
-        o.id === id ? { ...o, ...updates } : o
-      ),
-    })),
-  removeTextOverlay: (id) =>
-    set((s) => ({ textOverlays: s.textOverlays.filter((o) => o.id !== id) })),
-  clearTextOverlays: () => set({ textOverlays: [] }),
+  canvasConfig: { width: 600, height: 800 },
+  setCanvasConfig: (config) => set((state) => ({
+    canvasConfig: { ...state.canvasConfig, ...config }
+  })),
 
-  imageOverlays: [],
-  addImageOverlay: (overlay) =>
-    set((s) => ({
-      imageOverlays: [
-        ...s.imageOverlays,
-        { ...overlay, id: generateId() } as ImageOverlay,
-      ],
-    })),
-  updateImageOverlay: (id, updates) =>
-    set((s) => ({
-      imageOverlays: s.imageOverlays.map((o) =>
-        o.id === id ? { ...o, ...updates } : o
-      ),
-    })),
-  removeImageOverlay: (id) =>
-    set((s) => ({ imageOverlays: s.imageOverlays.filter((o) => o.id !== id) })),
-  clearImageOverlays: () => set({ imageOverlays: [] }),
+  elements: [],
+  selectedIds: [],
+
+  addElement: (el) => set((state) => {
+    const maxZ = state.elements.reduce((max, item) => Math.max(max, item.zIndex), 0);
+    const newEl = { ...el, id: generateId(), zIndex: maxZ + 1 } as unknown as CanvasElement;
+    return {
+      elements: [...state.elements, newEl]
+    };
+  }),
+
+  updateElement: (id, updates) => set((state) => ({
+    elements: state.elements.map((el) => el.id === id ? { ...el, ...updates } : el)
+  })),
+
+  removeElement: (id) => set((state) => ({
+    elements: state.elements.filter((el) => el.id !== id),
+    selectedIds: state.selectedIds.filter((sid) => sid !== id)
+  })),
+
+  setSelection: (ids) => set({ selectedIds: ids }),
+  clearSelection: () => set({ selectedIds: [] }),
+
+  bringToFront: (id) => set((state) => {
+    const maxZ = state.elements.reduce((max, item) => Math.max(max, item.zIndex), 0);
+    return {
+      elements: state.elements.map(el => el.id === id ? { ...el, zIndex: maxZ + 1 } : el)
+    };
+  }),
+
+  sendToBack: (id) => set((state) => {
+    const minZ = state.elements.reduce((min, item) => Math.min(min, item.zIndex), 0);
+    return {
+      elements: state.elements.map(el => el.id === id ? { ...el, zIndex: minZ - 1 } : el)
+    };
+  }),
+
+  loadDesign: (data) => set({
+    background: data.background,
+    envelope: data.envelope,
+    elements: data.elements,
+    canvasConfig: data.canvasConfig || { width: 600, height: 800 }
+  }),
+
+  // Legacy mappings for backward compat (temporarily)
+  textOverlays: [],
+  imageOverlays: []
 }));
 
 /** Build full design JSON for backend (Send). */
@@ -147,9 +194,7 @@ export function getDesignPayload(): DesignPayload {
   return {
     background: state.background,
     envelope: state.envelope,
-    card: {
-      textOverlays: state.textOverlays,
-      imageOverlays: state.imageOverlays,
-    },
+    canvasConfig: state.canvasConfig,
+    elements: state.elements,
   };
 }
